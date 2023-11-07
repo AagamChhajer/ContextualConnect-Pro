@@ -32,7 +32,6 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
-    #embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
@@ -40,7 +39,6 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
-   # llm = HuggingFaceHub(repo_id="tiiuae/falcon-7b", model_kwargs={"temperature":0.5, "max_length":1024})
 
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
@@ -80,8 +78,6 @@ def main():
     
     main_title = '<h1 style="font-family:Sans-serif; color:Black; font-size: 60px;">ContextualConnect Pro</h1>'
     st.markdown(main_title, unsafe_allow_html=True)
-    # st.markdown(
-    #     "ContextualConnect Pro is a contextual search engine that allows you to search for information in your documents. It uses state-of-the-art language models to understand your question and retrieve the most relevant information from your documents.")    
 
     original_title = '<p style="font-family:Sans-serif; color:Black; font-size: 40px;">Your One Stop Solution for Contextual Search</p>'
     st.markdown(original_title, unsafe_allow_html=True)
@@ -96,16 +92,9 @@ def main():
             "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
         if st.button("Process"):
             with st.spinner("Processing"):
-                # get pdf text
                 raw_text = get_pdf_text(pdf_docs)
-
-                # get the text chunks
                 text_chunks = get_text_chunks(raw_text)
-
-                # create vector store
                 vectorstore = get_vectorstore(text_chunks)
-
-                # create conversation chain
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
 
